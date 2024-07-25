@@ -27,7 +27,7 @@ export const CreateEmployeeModal = (props: CreateEmployeeModalProps) => {
     { label: "Tommy McConnell", value: "Associate" },
     { label: "Russ Miller", value: "Manager" },
   ];
-
+  //TODO make the component update the array outside of this component on 'create'
   return (
     <>
       <Modal
