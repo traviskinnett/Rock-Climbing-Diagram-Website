@@ -1,14 +1,17 @@
 import { Form, Input, Modal, Select } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import { Employee } from "../../models/Employee";
-import { useState } from "react";
-interface CreateEmployeeModalProps {
+import { useEffect, useState } from "react";
+interface CreateUpdateEmployeeModalProps {
   openModal: boolean;
   setOpenModal: (value: boolean) => void;
+  employee?: Employee;
   createEmployee: (value: Employee) => void;
 }
 
-export const CreateEmployeeModal = (props: CreateEmployeeModalProps) => {
+export const CreateUpdateEmployeeModal = (
+  props: CreateUpdateEmployeeModalProps
+) => {
   const [form] = Form.useForm();
   const [isManager, setIsManager] = useState(false);
 
@@ -33,6 +36,10 @@ export const CreateEmployeeModal = (props: CreateEmployeeModalProps) => {
     { label: "Russ Miller", value: "Russ Miller" },
   ];
 
+  useEffect(() => {
+    form.setFieldsValue(props.employee);
+  }, [props.openModal]);
+
   return (
     <>
       <Modal
@@ -47,13 +54,22 @@ export const CreateEmployeeModal = (props: CreateEmployeeModalProps) => {
         destroyOnClose
       >
         <Form form={form} clearOnDestroy onFinish={() => setIsManager(false)}>
-          <Form.Item name="firstName">
+          <Form.Item
+            name="firstName"
+            rules={[{ required: true, message: "First name is required" }]}
+          >
             <Input autoFocus placeholder="First Name"></Input>
           </Form.Item>
-          <Form.Item name="lastName">
+          <Form.Item
+            name="lastName"
+            rules={[{ required: true, message: "Last name is required" }]}
+          >
             <Input placeholder="Last Name"></Input>
           </Form.Item>
-          <Form.Item name="role">
+          <Form.Item
+            name="role"
+            rules={[{ required: true, message: "Please select employee role" }]}
+          >
             <Select
               placeholder="Role"
               options={roleOptions}
@@ -67,7 +83,15 @@ export const CreateEmployeeModal = (props: CreateEmployeeModalProps) => {
             ></Select>
           </Form.Item>
           {!isManager ? (
-            <Form.Item name="manager">
+            <Form.Item
+              name="manager"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the employee's manager",
+                },
+              ]}
+            >
               <Select placeholder="Manager" options={managerOptions}></Select>
             </Form.Item>
           ) : null}
