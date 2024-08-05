@@ -3,6 +3,7 @@ export interface Employee {
   firstName: string;
   lastName: string;
   role: EmployeeRole;
+  manager?: string;
 }
 
 export type EmployeeRole = "Associate" | "Manager";
