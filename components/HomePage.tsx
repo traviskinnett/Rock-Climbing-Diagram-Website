@@ -17,7 +17,7 @@ export const HomePage = () => {
     employees.push(Employee);
     employeeId++;
   };
-  console.log(employees);
+
   const columns: ColumnsType = [
     { title: "ID", dataIndex: "id" },
     { title: "First Name", dataIndex: "firstName" },
