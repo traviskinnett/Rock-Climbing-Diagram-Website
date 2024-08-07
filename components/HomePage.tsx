@@ -3,12 +3,14 @@ import { useState } from "react";
 import { CreateUpdateEmployeeModal } from "./Employees/CreateUpdateEmployeeModal";
 import { Employee } from "../models/Employee";
 import { ColumnsType } from "antd/es/table";
-let employees: Employee[] = [];
+
 let employeeId = 1;
 export const HomePage = () => {
   const [openCreateUpdateEmployeeModal, setOpenCreateEmployeeModal] =
     useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<Employee>();
+  const [employees, updateEmployees] = useState<Employee[]>([]);
+  const [isEditEmployee, setIsEditEmployee] = useState(false);
 
   const handleClick = () => {
     setOpenCreateEmployeeModal(true);
@@ -18,6 +20,12 @@ export const HomePage = () => {
     Employee.id = employeeId;
     employees.push(Employee);
     employeeId++;
+  };
+
+  const updateEmployee = (Employee: Employee) => {
+    const foundEmployee = employees.findIndex((o) => o.id == Employee.id);
+
+    employees[foundEmployee] = Employee;
   };
 
   const columns: ColumnsType = [
@@ -34,7 +42,7 @@ export const HomePage = () => {
             <Button
               onClick={() => {
                 setCurrentEmployee(record);
-                console.log(record);
+                setIsEditEmployee(true);
                 setOpenCreateEmployeeModal(true);
               }}
             >
@@ -42,7 +50,7 @@ export const HomePage = () => {
             </Button>
             <Button
               onClick={() => {
-                employees = employees.filter((o) => o.id != record.id);
+                updateEmployees(employees.filter((o) => o.id != record.id));
               }}
             >
               Delete
@@ -50,12 +58,13 @@ export const HomePage = () => {
           </div>
         );
       },
+      width: 100,
     },
   ];
 
   return (
-    <div>
-      <div className="pb-4 text-xl flex justify-between">
+    <div className="w-128">
+      <div className="pb-4 text-xl flex justify-between ">
         Employees
         <Button onClick={handleClick}>Create</Button>
       </div>
@@ -71,7 +80,10 @@ export const HomePage = () => {
         openModal={openCreateUpdateEmployeeModal}
         setOpenModal={setOpenCreateEmployeeModal}
         employee={currentEmployee}
+        updateEmployee={updateEmployee}
         createEmployee={createEmployee}
+        setEdit={setIsEditEmployee}
+        edit={isEditEmployee}
       ></CreateUpdateEmployeeModal>
     </div>
   );

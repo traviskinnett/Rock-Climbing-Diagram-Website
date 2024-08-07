@@ -1,12 +1,15 @@
 import { Form, Input, Modal, Select } from "antd";
 import { DefaultOptionType } from "antd/es/select";
-import { Employee } from "../../models/Employee";
 import { useEffect, useState } from "react";
+import { Employee } from "../../models/Employee";
 interface CreateUpdateEmployeeModalProps {
   openModal: boolean;
   setOpenModal: (value: boolean) => void;
   employee?: Employee;
+  updateEmployee: (value: Employee) => void;
   createEmployee: (value: Employee) => void;
+  setEdit?: (value: boolean) => void;
+  edit?: boolean;
 }
 
 export const CreateUpdateEmployeeModal = (
@@ -16,14 +19,25 @@ export const CreateUpdateEmployeeModal = (
   const [isManager, setIsManager] = useState(false);
 
   const onOk = () => {
-    const employee = form.getFieldsValue();
-
-    props.createEmployee(employee);
+    const employeeValues = form.getFieldsValue();
+    if (props.edit && props.setEdit) {
+      if (props.employee) {
+        const newEmployee = Object.assign(props.employee, employeeValues);
+        props.updateEmployee(newEmployee);
+        console.log(newEmployee);
+      }
+      props.setEdit(false);
+    } else {
+      props.createEmployee(employeeValues);
+    }
     props.setOpenModal(false);
+    form.resetFields();
   };
 
   const handleCancel = () => {
     props.setOpenModal(false);
+    if (props.edit && props.setEdit) props.setEdit(false);
+    form.resetFields();
   };
 
   const roleOptions: DefaultOptionType[] = [
@@ -37,8 +51,10 @@ export const CreateUpdateEmployeeModal = (
   ];
 
   useEffect(() => {
-    form.setFieldsValue(props.employee);
+    if (props.edit) form.setFieldsValue(props.employee);
   }, [props.openModal]);
+
+  //TODO fix the rules for the form
 
   return (
     <>
@@ -49,11 +65,10 @@ export const CreateUpdateEmployeeModal = (
           onOk();
         }}
         onCancel={handleCancel}
-        title="Create Employee"
-        okText="Create"
-        destroyOnClose
+        title={`${props.edit ? "Edit" : "Create"} Employee`}
+        okText={`${props.edit ? "Update" : "Create"}`}
       >
-        <Form form={form} clearOnDestroy onFinish={() => setIsManager(false)}>
+        <Form form={form} onFinish={() => setIsManager(false)}>
           <Form.Item
             name="firstName"
             rules={[{ required: true, message: "First name is required" }]}
